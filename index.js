@@ -13,8 +13,8 @@ const client = new Client({
 
 // 2. Khởi tạo Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
+// Thay đổi dòng khởi tạo model thành:
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 client.on('ready', () => {
   console.log(`Bot đã online: ${client.user.tag}`);
 });
