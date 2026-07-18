@@ -12,8 +12,7 @@ const client = new Client({
 
 // Khởi tạo Gemini AI (Dùng API Key từ Render)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
+const model = genAI.getGenerativeModel({ model: "gemini-1.5-pro" });
 client.on('ready', () => {
   console.log(`Bot đã online: ${client.user.tag}!`);
 });
