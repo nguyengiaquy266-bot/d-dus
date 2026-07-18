@@ -1,14 +1,7 @@
 const { Client, GatewayIntentBits } = require('discord.js');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
-const express = require('express');
 
-// 1. Tạo Web Server cho Render
-const app = express();
-const port = process.env.PORT || 3000;
-app.get('/', (req, res) => res.send('Bot đang chạy ổn định!'));
-app.listen(port, () => console.log(`Web server đang chạy trên port ${port}`));
-
-// 2. Cấu hình Bot Discord
+// Khởi tạo Discord Client
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -17,16 +10,14 @@ const client = new Client({
   ],
 });
 
-// 3. Khởi tạo Gemini AI
+// Khởi tạo Gemini AI (Dùng API Key từ Render)
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-// 4. Sự kiện khi bot online
 client.on('ready', () => {
-  console.log(`Bot đã online với tên: ${client.user.tag}!`);
+  console.log(`Bot đã online: ${client.user.tag}!`);
 });
 
-// 5. Sự kiện khi có tin nhắn mới
 client.on('messageCreate', async (message) => {
   if (message.author.bot) return;
 
@@ -35,19 +26,19 @@ client.on('messageCreate', async (message) => {
     
     try {
       await message.channel.sendTyping();
-      
       const result = await model.generateContent(prompt);
       const response = await result.response;
       const text = response.text();
-
+      
+      // Chia nhỏ tin nhắn nếu dài quá 2000 ký tự
       if (text.length > 2000) {
-         await message.reply(text.substring(0, 1997) + "...");
+        await message.reply(text.substring(0, 2000));
       } else {
-         await message.reply(text);
+        await message.reply(text);
       }
     } catch (error) {
-      console.error("Lỗi AI:", error);
-      await message.reply("Xin lỗi, tôi đang gặp lỗi kết nối với AI. Hãy kiểm tra lại API Key trên Render!");
+      console.error("LỖI CHI TIẾT:", error);
+      await message.reply("Tôi đang gặp lỗi kết nối với Gemini API. Hãy kiểm tra Logs trên Render!");
     }
   }
 });
